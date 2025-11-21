@@ -1,0 +1,78 @@
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+
+entity Address_register_tb is
+end Address_register_tb;
+
+architecture tb of Address_register_tb is
+
+    -- ?????????? ??????? (??? ????? ?????)
+    signal Clock      : std_logic := '0';
+    signal CLR        : std_logic := '0';
+    signal INR        : std_logic := '0';
+    signal LD         : std_logic := '0';
+    signal Bus_input  : std_logic_vector(11 downto 0) := (others => '0');
+    signal Bus_output : std_logic_vector(11 downto 0);
+
+begin
+
+    -- ????? UUT (Unit Under Test)
+    UUT: entity work.Address_register
+        port map(
+            Clock       => Clock,
+            CLR         => CLR,
+            INR         => INR,
+            LD          => LD,
+            Bus_input   => Bus_input,
+            Bus_output  => Bus_output
+        );
+
+    -- ????? ???? 10ns ? ?????? 100MHz
+    Clock <= not Clock after 5 ns;
+
+    -- ????? ??????? (Stimulus)
+    stimulus: process
+    begin
+        ---------------------------------------------------------
+        -- ??? 1: ????
+        CLR <= '1';
+        wait for 20 ns;
+        CLR <= '0';
+        wait for 20 ns;
+
+        ---------------------------------------------------------
+        -- ??? 2: Load ?????
+        Bus_input <= "000000001010";  -- ????? 10
+        LD <= '1';
+        wait for 20 ns;
+        LD <= '0';
+        wait for 20 ns;
+
+        ---------------------------------------------------------
+        -- ??? 3: Increment ?? ???
+        INR <= '1';
+        wait for 30 ns;
+        INR <= '0';
+        wait for 20 ns;
+
+        ---------------------------------------------------------
+        -- ??? 4: ?????? Load
+        Bus_input <= "000000000101";  -- ????? 5
+        LD <= '1';
+        wait for 20 ns;
+        LD <= '0';
+        wait for 20 ns;
+
+        ---------------------------------------------------------
+        -- ??? 5: ?????? 2 ???
+        INR <= '1';
+        wait for 20 ns;
+        INR <= '0';
+        wait for 20 ns;
+
+        wait; -- ?????
+    end process;
+
+end tb;
+
