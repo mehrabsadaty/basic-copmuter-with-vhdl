@@ -1,13 +1,4 @@
-{D:/FPGA/basic computer/Instruction_register.vhd} {1 {vcom -work work -2002 -explicit -vopt -stats=none {D:/FPGA/basic computer/Instruction_register.vhd}
-Model Technology ModelSim SE-64 vcom 10.6d Compiler 2018.02 Feb 24 2018
--- Loading package STANDARD
--- Loading package TEXTIO
--- Loading package std_logic_1164
--- Loading package NUMERIC_STD
--- Compiling entity Instruction_register
--- Compiling architecture IR of Instruction_register
-
-} {} {}} {D:/FPGA/basic computer/Data_register.vhd} {1 {vcom -work work -2002 -explicit -vopt -stats=none {D:/FPGA/basic computer/Data_register.vhd}
+{D:/FPGA/basic computer/Data_register.vhd} {1 {vcom -work work -2002 -explicit -vopt -stats=none {D:/FPGA/basic computer/Data_register.vhd}
 Model Technology ModelSim SE-64 vcom 10.6d Compiler 2018.02 Feb 24 2018
 -- Loading package STANDARD
 -- Loading package TEXTIO
@@ -16,15 +7,31 @@ Model Technology ModelSim SE-64 vcom 10.6d Compiler 2018.02 Feb 24 2018
 -- Compiling entity Data_register
 -- Compiling architecture DR of Data_register
 
-} {} {}} {D:/FPGA/basic computer/temporary_register.vhd} {1 {vcom -work work -2002 -explicit -vopt -stats=none {D:/FPGA/basic computer/temporary_register.vhd}
+} {} {}} {D:/FPGA/basic computer/Instruction_register.vhd} {1 {vcom -work work -2002 -explicit -vopt -stats=none {D:/FPGA/basic computer/Instruction_register.vhd}
 Model Technology ModelSim SE-64 vcom 10.6d Compiler 2018.02 Feb 24 2018
 -- Loading package STANDARD
 -- Loading package TEXTIO
 -- Loading package std_logic_1164
 -- Loading package NUMERIC_STD
--- Compiling entity Temporary_register
--- Compiling architecture TR of Instruction_register
--- Loading entity Instruction_register
+-- Compiling entity Instruction_register
+-- Compiling architecture IR of Instruction_register
+
+} {} {}} {D:/FPGA/basic computer/Address_register.vhd} {1 {vcom -work work -2002 -explicit -vopt -stats=none {D:/FPGA/basic computer/Address_register.vhd}
+Model Technology ModelSim SE-64 vcom 10.6d Compiler 2018.02 Feb 24 2018
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling entity Address_register
+-- Compiling architecture AR of Address_register
+
+} {} {}} {D:/FPGA/basic computer/bus_data.vhd} {1 {vcom -work work -2002 -explicit -vopt -stats=none {D:/FPGA/basic computer/bus_data.vhd}
+Model Technology ModelSim SE-64 vcom 10.6d Compiler 2018.02 Feb 24 2018
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Compiling entity data_bus
+-- Compiling architecture bus_crossing of data_bus
 
 } {} {}} {D:/FPGA/basic computer/Program_counter.vhd} {1 {vcom -work work -2002 -explicit -vopt -stats=none {D:/FPGA/basic computer/Program_counter.vhd}
 Model Technology ModelSim SE-64 vcom 10.6d Compiler 2018.02 Feb 24 2018
@@ -35,12 +42,14 @@ Model Technology ModelSim SE-64 vcom 10.6d Compiler 2018.02 Feb 24 2018
 -- Compiling entity Program_counter
 -- Compiling architecture PC of Program_counter
 
-} {} {}} {D:/FPGA/basic computer/bus_data.vhd} {1 {vcom -work work -2002 -explicit -vopt -stats=none {D:/FPGA/basic computer/bus_data.vhd}
+} {} {}} {D:/FPGA/basic computer/temporary_register.vhd} {1 {vcom -work work -2002 -explicit -vopt -stats=none {D:/FPGA/basic computer/temporary_register.vhd}
 Model Technology ModelSim SE-64 vcom 10.6d Compiler 2018.02 Feb 24 2018
 -- Loading package STANDARD
 -- Loading package TEXTIO
 -- Loading package std_logic_1164
--- Compiling entity data_bus
--- Compiling architecture bus_crossing of data_bus
+-- Loading package NUMERIC_STD
+-- Compiling entity Temporary_register
+-- Compiling architecture TR of Instruction_register
+-- Loading entity Instruction_register
 
 } {} {}}
