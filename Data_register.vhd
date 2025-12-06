@@ -16,6 +16,13 @@ entity Data_register is
 end Data_register;
 
 architecture DR of Data_register is
+    component bus_data
+        port (
+            DR            : in  std_logic_vector(15 downto 0);
+            register_data : out std_logic_vector(15 downto 0)
+        )
+        end component;
+
     signal DR_reg : unsigned(15 downto 0);
 begin 
     
@@ -34,5 +41,10 @@ begin
         end if;
 
     end process;
+
+    DR <= Bus_output;
+    register_data <= Bus_input;
+    
+
 end DR;
 

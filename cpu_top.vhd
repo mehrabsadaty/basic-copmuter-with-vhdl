@@ -1,0 +1,183 @@
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity CPU_Complete is
+    port(
+        Clock   : in std_logic;
+        Reset   : in std_logic
+    );
+end CPU_Complete;
+
+architecture Structural of CPU_Complete is
+    
+    signal System_Bus : std_logic_vector(15 downto 0);
+    
+    signal bus_selector : std_logic_vector(2 downto 0);
+    
+    signal dr_clr, dr_inr, dr_ld : std_logic;
+    signal ac_clr, ac_inr, ac_ld : std_logic;
+    signal ir_clr, ir_inr, ir_ld : std_logic;
+    signal tr_clr, tr_inr, tr_ld : std_logic;
+    signal ar_clr, ar_inr, ar_ld : std_logic;
+    signal pc_clr, pc_inr, pc_ld : std_logic;
+    signal mem_write, mem_read : std_logic;
+    
+    signal dr_to_bus : std_logic_vector(15 downto 0);
+    signal ac_to_bus : std_logic_vector(15 downto 0);
+    signal ir_to_bus : std_logic_vector(15 downto 0);
+    signal tr_to_bus : std_logic_vector(15 downto 0);
+    signal ar_to_bus : std_logic_vector(11 downto 0);
+    signal pc_to_bus : std_logic_vector(11 downto 0);
+    signal mem_to_bus : std_logic_vector(15 downto 0);
+    
+    signal alu_ac_out : std_logic_vector(15 downto 0);
+    signal alu_e_out : std_logic;
+    signal alu_op : std_logic_vector(3 downto 0);
+    signal dr_to_alu : std_logic_vector(15 downto 0);
+    
+    signal mem_address : unsigned(11 downto 0);
+    
+begin
+    
+    BUS_UNIT: entity work.data_bus
+    port map(
+        selector      => bus_selector,
+        memory        => mem_to_bus,
+        DR            => dr_to_bus,
+        AC            => ac_to_bus,
+        IR            => ir_to_bus,
+        TR            => tr_to_bus,
+        AR            => ar_to_bus,
+        PC            => pc_to_bus,
+        register_data => System_Bus
+    );
+    
+    DR: entity work.Data_register
+    port map(
+        Clock      => Clock,
+        CLR        => dr_clr,
+        INR        => dr_inr,
+        LD         => dr_ld,
+        Bus_input  => System_Bus,
+        Bus_output => dr_to_bus,
+        alu_output => dr_to_alu
+    );
+    
+    AC: entity work.Data_register
+    port map(
+        Clock      => Clock,
+        CLR        => ac_clr,
+        INR        => ac_inr,
+        LD         => ac_ld,
+        Bus_input  => System_Bus,
+        Bus_output => ac_to_bus,
+        alu_output => open
+    );
+    
+    IR: entity work.Instruction_register
+    port map(
+        Clock      => Clock,
+        CLR        => ir_clr,
+        INR        => ir_inr,
+        LD         => ir_ld,
+        Bus_input  => System_Bus,
+        Bus_output => ir_to_bus
+    );
+    
+    TR: entity work.Temporary_register
+    port map(
+        Clock      => Clock,
+        CLR        => tr_clr,
+        INR        => tr_inr,
+        LD         => tr_ld,
+        Bus_input  => System_Bus,
+        Bus_output => tr_to_bus
+    );
+    
+    AR: entity work.Address_register
+    port map(
+        Clock         => Clock,
+        CLR           => ar_clr,
+        INR           => ar_inr,
+        LD            => ar_ld,
+        Bus_input     => System_Bus(11 downto 0),
+        Bus_output    => ar_to_bus,
+        memory_output => std_logic_vector(mem_address)
+    );
+    
+    PC: entity work.Program_counter
+    port map(
+        Clock      => Clock,
+        CLR        => pc_clr,
+        INR        => pc_inr,
+        LD         => pc_ld,
+        Bus_input  => System_Bus(11 downto 0),
+        Bus_output => pc_to_bus
+    );
+    
+    MEMORY: entity work.memory
+    port map(
+        clk          => Clock,
+        write_enable => mem_write,
+        read_enable  => mem_read,
+        address      => mem_address,
+        bus_input    => System_Bus,
+        bus_output   => mem_to_bus
+    );
+    
+    ALU_UNIT: entity work.ALU
+    port map(
+        AC      => ac_to_bus,
+        DR      => dr_to_alu,
+        INPR    => "00000000",
+        E       => '0',
+        ALU_op  => alu_op,
+        AC_out  => alu_ac_out,
+        E_out   => alu_e_out
+    );
+    
+    CONTROL_UNIT: process(Clock, Reset)
+        type state_type is (FETCH, DECODE, EXECUTE);
+        variable state : state_type := FETCH;
+    begin
+        if Reset = '1' then
+            state := FETCH;
+            dr_ld <= '0'; ac_ld <= '0'; ir_ld <= '0';
+            tr_ld <= '0'; ar_ld <= '0'; pc_ld <= '0';
+            mem_write <= '0'; mem_read <= '0';
+            bus_selector <= "000";
+            
+        elsif rising_edge(Clock) then
+            dr_ld <= '0'; ac_ld <= '0'; ir_ld <= '0';
+            tr_ld <= '0'; ar_ld <= '0'; pc_ld <= '0';
+            mem_write <= '0'; mem_read <= '0';
+            
+            case state is
+                when FETCH =>
+                    bus_selector <= "010";
+                    ar_ld <= '1';
+                    state := DECODE;
+                    
+                when DECODE =>
+                    mem_read <= '1';
+                    bus_selector <= "111";
+                    ir_ld <= '1';
+                    state := EXECUTE;
+                    
+                when EXECUTE =>
+                    case ir_to_bus(15 downto 12) is
+                        when "0001" =>
+                            bus_selector <= "101";
+                            ar_ld <= '1';
+                            mem_read <= '1';
+                            bus_selector <= "111";
+                            dr_ld <= '1';
+                            
+                        when others =>
+                    end case;
+                    state := FETCH;
+            end case;
+        end if;
+    end process;
+    
+end Structural;
