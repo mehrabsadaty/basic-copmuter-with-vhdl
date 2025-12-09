@@ -1,55 +1,31 @@
-{D:/FPGA/basic computer/Data_register.vhd} {0 {vcom -work work -2002 -explicit -vopt -stats=none {D:/FPGA/basic computer/Data_register.vhd}
+{D:/FPGA/basic computer/tb.vhd} {1 {vcom -work work -2002 -explicit -vopt -stats=none {D:/FPGA/basic computer/tb.vhd}
 Model Technology ModelSim SE-64 vcom 10.6d Compiler 2018.02 Feb 24 2018
 -- Loading package STANDARD
 -- Loading package TEXTIO
 -- Loading package std_logic_1164
 -- Loading package NUMERIC_STD
--- Compiling entity Data_register
--- Compiling architecture DR of Data_register
-** Error: D:/FPGA/basic computer/Data_register.vhd(24): near "end": (vcom-1576) expecting ';'.
-** Error: D:/FPGA/basic computer/Data_register.vhd(45): Cannot drive signal 'DR' of mode IN.
-** Error: D:/FPGA/basic computer/Data_register.vhd(45): Cannot read output "Bus_output".
-	VHDL 2008 allows reading outputs.
-	This facility is enabled by compiling with -2008.
-** Error: D:/FPGA/basic computer/Data_register.vhd(49): VHDL Compiler exiting
+-- Compiling entity test_memory_dr
+-- Compiling architecture tb of test_memory_dr
+-- Loading entity memory
+-- Loading entity Data_register
 
-} {9.0 12.0 14.0 15.0} {}} {D:/FPGA/basic computer/cpu_top.vhd} {0 {vcom -work work -2002 -explicit -vopt -stats=none {D:/FPGA/basic computer/cpu_top.vhd}
+} {} {}} {D:/FPGA/basic computer/cpu_top.vhd} {1 {vcom -work work -2002 -explicit -vopt -stats=none {D:/FPGA/basic computer/cpu_top.vhd}
 Model Technology ModelSim SE-64 vcom 10.6d Compiler 2018.02 Feb 24 2018
 -- Loading package STANDARD
 -- Loading package TEXTIO
 -- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
 -- Compiling entity CPU_Complete
 -- Compiling architecture Structural of CPU_Complete
-** Error: D:/FPGA/basic computer/cpu_top.vhd(38): (vcom-1136) Unknown identifier "unsigned".
 -- Loading entity data_bus
--- Loading package NUMERIC_STD
 -- Loading entity Data_register
 -- Loading entity Instruction_register
 -- Loading entity Temporary_register
 -- Loading entity Address_register
-** Error: D:/FPGA/basic computer/cpu_top.vhd(105): (vcom-1041) Formal "memory_output" of mode OUT cannot be associated with an actual that is a type conversion.
 -- Loading entity Program_counter
 -- Loading entity memory
 -- Loading entity ALU
-** Error: D:/FPGA/basic computer/cpu_top.vhd(183): VHDL Compiler exiting
-
-} {8.0 9.0 15.0 16.0 19.0 20.0} {}} {D:/FPGA/basic computer/ALU.vhd} {1 {vcom -work work -2002 -explicit -vopt -stats=none {D:/FPGA/basic computer/ALU.vhd}
-Model Technology ModelSim SE-64 vcom 10.6d Compiler 2018.02 Feb 24 2018
--- Loading package STANDARD
--- Loading package TEXTIO
--- Loading package std_logic_1164
--- Loading package NUMERIC_STD
--- Compiling entity ALU
--- Compiling architecture Behavioral of ALU
-
-} {} {}} {D:/FPGA/basic computer/Instruction_register.vhd} {1 {vcom -work work -2002 -explicit -vopt -stats=none {D:/FPGA/basic computer/Instruction_register.vhd}
-Model Technology ModelSim SE-64 vcom 10.6d Compiler 2018.02 Feb 24 2018
--- Loading package STANDARD
--- Loading package TEXTIO
--- Loading package std_logic_1164
--- Loading package NUMERIC_STD
--- Compiling entity Instruction_register
--- Compiling architecture IR of Instruction_register
+-- Loading entity ControlUnit_Mano
 
 } {} {}} {D:/FPGA/basic computer/Address_register.vhd} {1 {vcom -work work -2002 -explicit -vopt -stats=none {D:/FPGA/basic computer/Address_register.vhd}
 Model Technology ModelSim SE-64 vcom 10.6d Compiler 2018.02 Feb 24 2018
@@ -60,22 +36,32 @@ Model Technology ModelSim SE-64 vcom 10.6d Compiler 2018.02 Feb 24 2018
 -- Compiling entity Address_register
 -- Compiling architecture AR of Address_register
 
-} {} {}} {D:/FPGA/basic computer/bus_data.vhd} {1 {vcom -work work -2002 -explicit -vopt -stats=none {D:/FPGA/basic computer/bus_data.vhd}
-Model Technology ModelSim SE-64 vcom 10.6d Compiler 2018.02 Feb 24 2018
--- Loading package STANDARD
--- Loading package TEXTIO
--- Loading package std_logic_1164
--- Compiling entity data_bus
--- Compiling architecture bus_crossing of data_bus
-
-} {} {}} {D:/FPGA/basic computer/Program_counter.vhd} {1 {vcom -work work -2002 -explicit -vopt -stats=none {D:/FPGA/basic computer/Program_counter.vhd}
+} {} {}} {D:/FPGA/basic computer/Instruction_register.vhd} {1 {vcom -work work -2002 -explicit -vopt -stats=none {D:/FPGA/basic computer/Instruction_register.vhd}
 Model Technology ModelSim SE-64 vcom 10.6d Compiler 2018.02 Feb 24 2018
 -- Loading package STANDARD
 -- Loading package TEXTIO
 -- Loading package std_logic_1164
 -- Loading package NUMERIC_STD
--- Compiling entity Program_counter
--- Compiling architecture PC of Program_counter
+-- Compiling entity Instruction_register
+-- Compiling architecture IR of Instruction_register
+
+} {} {}} {D:/FPGA/basic computer/ALU.vhd} {1 {vcom -work work -2002 -explicit -vopt -stats=none {D:/FPGA/basic computer/ALU.vhd}
+Model Technology ModelSim SE-64 vcom 10.6d Compiler 2018.02 Feb 24 2018
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling entity ALU
+-- Compiling architecture Behavioral of ALU
+
+} {} {}} {D:/FPGA/basic computer/Data_register.vhd} {1 {vcom -work work -2002 -explicit -vopt -stats=none {D:/FPGA/basic computer/Data_register.vhd}
+Model Technology ModelSim SE-64 vcom 10.6d Compiler 2018.02 Feb 24 2018
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling entity Data_register
+-- Compiling architecture DR of Data_register
 
 } {} {}} {D:/FPGA/basic computer/temporary_register.vhd} {1 {vcom -work work -2002 -explicit -vopt -stats=none {D:/FPGA/basic computer/temporary_register.vhd}
 Model Technology ModelSim SE-64 vcom 10.6d Compiler 2018.02 Feb 24 2018
@@ -86,6 +72,23 @@ Model Technology ModelSim SE-64 vcom 10.6d Compiler 2018.02 Feb 24 2018
 -- Compiling entity Temporary_register
 -- Compiling architecture TR of Instruction_register
 -- Loading entity Instruction_register
+
+} {} {}} {D:/FPGA/basic computer/Program_counter.vhd} {1 {vcom -work work -2002 -explicit -vopt -stats=none {D:/FPGA/basic computer/Program_counter.vhd}
+Model Technology ModelSim SE-64 vcom 10.6d Compiler 2018.02 Feb 24 2018
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling entity Program_counter
+-- Compiling architecture PC of Program_counter
+
+} {} {}} {D:/FPGA/basic computer/bus_data.vhd} {1 {vcom -work work -2002 -explicit -vopt -stats=none {D:/FPGA/basic computer/bus_data.vhd}
+Model Technology ModelSim SE-64 vcom 10.6d Compiler 2018.02 Feb 24 2018
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Compiling entity data_bus
+-- Compiling architecture bus_crossing of data_bus
 
 } {} {}} {D:/FPGA/basic computer/Control_unit.vhd} {1 {vcom -work work -2002 -explicit -vopt -stats=none {D:/FPGA/basic computer/Control_unit.vhd}
 Model Technology ModelSim SE-64 vcom 10.6d Compiler 2018.02 Feb 24 2018

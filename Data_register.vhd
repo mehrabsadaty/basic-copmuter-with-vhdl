@@ -1,7 +1,6 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
- 
 
 entity Data_register is
     port (
@@ -16,19 +15,13 @@ entity Data_register is
 end Data_register;
 
 architecture DR of Data_register is
-    component bus_data
-        port (
-            DR            : in  std_logic_vector(15 downto 0);
-            register_data : out std_logic_vector(15 downto 0)
-        )
-        end component;
-
     signal DR_reg : unsigned(15 downto 0);
 begin 
     
     Bus_output <= std_logic_vector(DR_reg);
     alu_output <= std_logic_vector(DR_reg);
-    process(Clock , CLR)
+    
+    process(Clock, CLR)
     begin
         if CLR = '1' then 
             DR_reg <= (others => '0');
@@ -39,12 +32,6 @@ begin
                 DR_reg <= DR_reg + 1;
             end if;
         end if;
-
     end process;
 
-    DR <= Bus_output;
-    register_data <= Bus_input;
-    
-
 end DR;
-

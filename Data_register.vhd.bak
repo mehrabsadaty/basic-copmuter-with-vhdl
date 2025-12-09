@@ -1,7 +1,6 @@
-library library IEEE;
+library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
- 
 
 entity Data_register is
     port (
@@ -10,8 +9,9 @@ entity Data_register is
         INR          : in std_logic;
         LD           : in std_logic;
         Bus_input    : in std_logic_vector(15 downto 0);
-        Bus_output   : out std_logic_vector(15 downto 0)
-    )
+        Bus_output   : out std_logic_vector(15 downto 0);
+        alu_output   : out std_logic_vector(15 downto 0)
+    );
 end Data_register;
 
 architecture DR of Data_register is
@@ -19,7 +19,42 @@ architecture DR of Data_register is
 begin 
     
     Bus_output <= std_logic_vector(DR_reg);
-    process(Clock , CLR)
+    alu_output <= std_logic_vector(DR_reg);
+    
+    process(Clock, CLR)
+    begin
+        if CLR = '1' then 
+            DR_reg <= (others => '0');
+        elsif rising_edge(Clock) then 
+            if LD = '1' then 
+                DR_reg <= unsigned(Bus_input);
+            elsif INR = '1' then 
+                DR_reg <= DR_reg + 1;
+            end if;
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+
+entity Data_register is
+    port (
+        Clock        : in std_logic;
+        CLR          : in std_logic;
+        INR          : in std_logic;
+        LD           : in std_logic;
+        Bus_input    : in std_logic_vector(15 downto 0);
+        Bus_output   : out std_logic_vector(15 downto 0);
+        alu_output   : out std_logic_vector(15 downto 0)
+    );
+end Data_register;
+
+architecture DR of Data_register is
+    signal DR_reg : unsigned(15 downto 0);
+begin 
+    
+    Bus_output <= std_logic_vector(DR_reg);
+    alu_output <= std_logic_vector(DR_reg);
+    
+    process(Clock, CLR)
     begin
         if CLR = '1' then 
             DR_reg <= (others => '0');
@@ -30,7 +65,10 @@ begin
                 DR_reg <= DR_reg + 1;
             end if;
         end if;
-
     end process;
+
+end DR;        end if;
+    end process;
+
 end DR;
 

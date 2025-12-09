@@ -1,6 +1,6 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
-use IEEE.numeric_std.all;
+use IEEE.numeric_std.all;  -- ????? ???? ??? ??
 
 entity CPU_Complete is
     port(
@@ -36,12 +36,7 @@ architecture Structural of CPU_Complete is
     signal alu_op : std_logic_vector(3 downto 0);
     signal dr_to_alu : std_logic_vector(15 downto 0);
     
-    signal mem_address : std_logic_vector(11 downto 0);
-    
-    signal instruction_bus : std_logic_vector(15 downto 0);
-    signal t_state : std_logic_vector(3 downto 0);
-    signal i_bit : std_logic;
-    signal opcode_decoded : std_logic_vector(7 downto 0);
+    signal mem_address : std_logic_vector(11 downto 0);  -- ????? ???
     
 begin
     
@@ -90,8 +85,6 @@ begin
         Bus_output => ir_to_bus
     );
     
-    instruction_bus <= ir_to_bus;
-    
     TR: entity work.Temporary_register
     port map(
         Clock      => Clock,
@@ -110,7 +103,7 @@ begin
         LD            => ar_ld,
         Bus_input     => System_Bus(11 downto 0),
         Bus_output    => ar_to_bus,
-        memory_output => mem_address
+        memory_output => mem_address  -- ????? ???
     );
     
     PC: entity work.Program_counter
@@ -128,7 +121,7 @@ begin
         clk          => Clock,
         write_enable => mem_write,
         read_enable  => mem_read,
-        address      => unsigned(mem_address),
+        address      => unsigned(mem_address),  -- ????? ?? unsigned
         bus_input    => System_Bus,
         bus_output   => mem_to_bus
     );
@@ -144,47 +137,48 @@ begin
         E_out   => alu_e_out
     );
     
-    CONTROL_UNIT: entity work.ControlUnit_Mano
-    port map(
-        clk         => Clock,
-        reset       => Reset,
-        
-        instruction => instruction_bus,
-        
-        DR_load     => dr_ld,
-        DR_inr      => dr_inr,
-        DR_clr      => dr_clr,
-        
-        AC_load     => ac_ld,
-        AC_inr      => ac_inr,
-        AC_clr      => ac_clr,
-        
-        IR_load     => ir_ld,
-        IR_inr      => ir_inr,
-        IR_clr      => ir_clr,
-        
-        TR_load     => tr_ld,
-        TR_inr      => tr_inr,
-        TR_clr      => tr_clr,
-        
-        AR_load     => ar_ld,
-        AR_inr      => ar_inr,
-        AR_clr      => ar_clr,
-        
-        PC_load     => pc_ld,
-        PC_inr      => pc_inr,
-        PC_clr      => pc_clr,
-        
-        bus_selector => bus_selector,
-        
-        mem_read    => mem_read,
-        mem_write   => mem_write,
-        
-        alu_op      => alu_op,
-        
-        T_state     => t_state,
-        I_bit       => i_bit,
-        opcode_decoded => opcode_decoded
-    );
+    CONTROL_UNIT: process(Clock, Reset)
+        type state_type is (FETCH, DECODE, EXECUTE);
+        variable state : state_type := FETCH;
+    begin
+        if Reset = '1' then
+            state := FETCH;
+            dr_ld <= '0'; ac_ld <= '0'; ir_ld <= '0';
+            tr_ld <= '0'; ar_ld <= '0'; pc_ld <= '0';
+            mem_write <= '0'; mem_read <= '0';
+            bus_selector <= "000";
+            
+        elsif rising_edge(Clock) then
+            dr_ld <= '0'; ac_ld <= '0'; ir_ld <= '0';
+            tr_ld <= '0'; ar_ld <= '0'; pc_ld <= '0';
+            mem_write <= '0'; mem_read <= '0';
+            
+            case state is
+                when FETCH =>
+                    bus_selector <= "010";
+                    ar_ld <= '1';
+                    state := DECODE;
+                    
+                when DECODE =>
+                    mem_read <= '1';
+                    bus_selector <= "111";
+                    ir_ld <= '1';
+                    state := EXECUTE;
+                    
+                when EXECUTE =>
+                    case ir_to_bus(15 downto 12) is
+                        when "0001" =>
+                            bus_selector <= "101";
+                            ar_ld <= '1';
+                            mem_read <= '1';
+                            bus_selector <= "111";
+                            dr_ld <= '1';
+                            
+                        when others =>
+                    end case;
+                    state := FETCH;
+            end case;
+        end if;
+    end process;
     
 end Structural;
