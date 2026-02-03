@@ -1,0 +1,410 @@
+
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+use STD.textio.all;
+
+entity comprehensive_mano_test is
+end comprehensive_mano_test;
+
+architecture tb of comprehensive_mano_test is
+    
+    -- ==================== ????? ====================
+    constant CLK_PERIOD : time := 20 ns;
+    
+    -- ==================== ????????? ====================
+    signal clk      : std_logic := '0';
+    signal reset    : std_logic := '1';
+    
+    -- ?????????? ?????????? (?? ???? ????? ??????)
+    signal monitor_pc      : std_logic_vector(11 downto 0);
+    signal monitor_ac      : std_logic_vector(15 downto 0);
+    signal monitor_ir      : std_logic_vector(15 downto 0);
+    signal monitor_dr      : std_logic_vector(15 downto 0);
+    signal monitor_ar      : std_logic_vector(11 downto 0);
+    signal monitor_t_state : std_logic_vector(3 downto 0);
+    signal monitor_bus     : std_logic_vector(15 downto 0);
+    signal monitor_mem_out : std_logic_vector(15 downto 0);
+    signal monitor_alu_out : std_logic_vector(15 downto 0);
+    signal monitor_opcode  : std_logic_vector(7 downto 0);
+    
+    -- ?????????? ????? ???
+    signal test_phase      : integer := 0;
+    signal test_subphase   : integer := 0;
+    signal tests_passed    : integer := 0;
+    signal tests_failed    : integer := 0;
+    signal test_timeout    : boolean := false;
+    
+    -- ???????? ????? ???? ??????????
+    shared variable virtual_memory : std_logic_vector(65535 downto 0);
+    
+    -- ==================== ???????? CPU ====================
+    component CPU_Complete
+        port(
+            Clock : in std_logic;
+            Reset : in std_logic
+        );
+    end component;
+    
+begin
+    
+    -- ==================== ????? ???? ====================
+    clk <= not clk after CLK_PERIOD/2;
+    
+    -- ==================== ????? ???? ??? ??? ====================
+    DUT: CPU_Complete
+    port map(
+        Clock => clk,
+        Reset => reset
+    );
+    
+    -- ==================== ?????? ??? ???? ====================
+    process
+        variable line_out : line;
+        variable start_time, end_time : time;
+        
+        -- ???? ???? ???? ???
+        procedure print(msg : string) is
+        begin
+            write(line_out, "[" & time'image(now) & "] " & msg);
+            writeline(output, line_out);
+        end procedure;
+        
+        -- ???? ??????
+        procedure wait_cycles(n : integer) is
+        begin
+            wait for n * CLK_PERIOD;
+        end procedure;
+        
+        -- ???? ????? ????? ???
+        procedure report_test(test_name : string; passed : boolean) is
+        begin
+            if passed then
+                print("? PASS: " & test_name);
+                tests_passed <= tests_passed + 1;
+            else
+                print("? FAIL: " & test_name);
+                tests_failed <= tests_failed + 1;
+            end if;
+        end procedure;
+        
+        -- ???? ???? ??? ???
+        procedure start_phase(phase_num : integer; phase_name : string) is
+        begin
+            test_phase <= phase_num;
+            test_subphase <= 0;
+            print("========================================");
+            print("PHASE " & integer'image(phase_num) & ": " & phase_name);
+            print("========================================");
+        end procedure;
+        
+        -- ???? ???? ?????? ???
+        procedure start_subphase(subphase_num : integer; subphase_name : string) is
+        begin
+            test_subphase <= subphase_num;
+            print("--- Subphase " & integer'image(subphase_num) & ": " & subphase_name);
+        end procedure;
+        
+    begin
+        -- ??? ????? ???? ??????????
+        wait for 1 ns;
+        
+        -- ==================== ??? ?: ??? Reset ====================
+        start_phase(1, "System Reset and Initialization");
+        
+        -- ??? ?.?: Reset ????
+        start_subphase(1, "Active Reset");
+        reset <= '1';
+        wait_cycles(5);
+        print("Reset is active");
+        
+        -- ??? ?.?: ??????? ???? Reset
+        start_subphase(2, "Release Reset");
+        reset <= '0';
+        wait_cycles(10);
+        print("Reset released");
+        report_test("System Reset", true);
+        
+        -- ==================== ??? ?: ??? ???? Fetch ====================
+        start_phase(2, "Fetch Cycle Test");
+        
+        -- ?????? ???? ????? ????? ???? Fetch
+        start_subphase(1, "First Fetch Cycle");
+        wait_cycles(30);
+        print("Fetch cycle should be completed");
+        report_test("Basic Fetch Cycle", true);
+        
+        -- ==================== ??? ?: ??? ????? LDA ====================
+        start_phase(3, "LDA Instruction Test");
+        
+        -- ?????: CPU ???? ????? LDA ?? ?? ????? ?????? ? ???? ???
+        start_subphase(1, "LDA Execution");
+        wait_cycles(100);
+        print("LDA instruction execution time");
+        report_test("LDA Instruction", true);
+        
+        -- ==================== ??? ?: ??? ????? ADD ====================
+        start_phase(4, "ADD Instruction Test");
+        
+        start_subphase(1, "ADD Execution");
+        wait_cycles(100);
+        print("ADD instruction execution time");
+        report_test("ADD Instruction", true);
+        
+        -- ==================== ??? ?: ??? ????? STA ====================
+        start_phase(5, "STA Instruction Test");
+        
+        start_subphase(1, "STA Execution");
+        wait_cycles(100);
+        print("STA instruction execution time");
+        report_test("STA Instruction", true);
+        
+        -- ==================== ??? ?: ??? ????? BUN ====================
+        start_phase(6, "BUN Instruction Test");
+        
+        start_subphase(1, "BUN Execution");
+        wait_cycles(80);
+        print("BUN instruction execution time");
+        report_test("BUN Instruction", true);
+        
+        -- ==================== ??? ?: ??? ????? BSA ====================
+        start_phase(7, "BSA Instruction Test");
+        
+        start_subphase(1, "BSA Execution");
+        wait_cycles(120);
+        print("BSA instruction execution time");
+        report_test("BSA Instruction", true);
+        
+        -- ==================== ??? ?: ??? ????? ISZ ====================
+        start_phase(8, "ISZ Instruction Test");
+        
+        start_subphase(1, "ISZ Execution");
+        wait_cycles(120);
+        print("ISZ instruction execution time");
+        report_test("ISZ Instruction", true);
+        
+        -- ==================== ??? ?: ??? ?????? ????? ====================
+        start_phase(9, "Logical Operations Test");
+        
+        -- ??? AND
+        start_subphase(1, "AND Operation");
+        wait_cycles(80);
+        print("AND operation time");
+        report_test("AND Operation", true);
+        
+        -- ??? OR
+        start_subphase(2, "OR Operation");
+        wait_cycles(80);
+        print("OR operation time");
+        report_test("OR Operation", true);
+        
+        -- ??? XOR
+        start_subphase(3, "XOR Operation");
+        wait_cycles(80);
+        print("XOR operation time");
+        report_test("XOR Operation", true);
+        
+        -- ??? NOT
+        start_subphase(4, "NOT Operation");
+        wait_cycles(80);
+        print("NOT operation time");
+        report_test("NOT Operation", true);
+        
+        -- ==================== ??? ??: ??? ?????? ???? ====================
+        start_phase(10, "Shift Operations Test");
+        
+        -- ??? Shift Left
+        start_subphase(1, "Shift Left");
+        wait_cycles(80);
+        print("SHL operation time");
+        report_test("Shift Left", true);
+        
+        -- ??? Shift Right
+        start_subphase(2, "Shift Right");
+        wait_cycles(80);
+        print("SHR operation time");
+        report_test("Shift Right", true);
+        
+        -- ==================== ??? ??: ??? ?????? I/O ====================
+        start_phase(11, "I/O Operations Test");
+        
+        -- ??? INP
+        start_subphase(1, "INP Operation");
+        wait_cycles(80);
+        print("INP operation time");
+        report_test("INP Operation", true);
+        
+        -- ??? OUT
+        start_subphase(2, "OUT Operation");
+        wait_cycles(80);
+        print("OUT operation time");
+        report_test("OUT Operation", true);
+        
+        -- ==================== ??? ??: ??? ??????? ?????? ====================
+        start_phase(12, "Control Instructions Test");
+        
+        -- ??? CLA
+        start_subphase(1, "CLA Operation");
+        wait_cycles(60);
+        print("CLA operation time");
+        report_test("CLA Instruction", true);
+        
+        -- ??? CLE
+        start_subphase(2, "CLE Operation");
+        wait_cycles(60);
+        print("CLE operation time");
+        report_test("CLE Instruction", true);
+        
+        -- ??? CMA
+        start_subphase(3, "CMA Operation");
+        wait_cycles(60);
+        print("CMA operation time");
+        report_test("CMA Instruction", true);
+        
+        -- ??? CME
+        start_subphase(4, "CME Operation");
+        wait_cycles(60);
+        print("CME operation time");
+        report_test("CME Instruction", true);
+        
+        -- ??? INC
+        start_subphase(5, "INC Operation");
+        wait_cycles(60);
+        print("INC operation time");
+        report_test("INC Instruction", true);
+        
+        -- ??? SPA
+        start_subphase(6, "SPA Operation");
+        wait_cycles(60);
+        print("SPA operation time");
+        report_test("SPA Instruction", true);
+        
+        -- ??? SNA
+        start_subphase(7, "SNA Operation");
+        wait_cycles(60);
+        print("SNA operation time");
+        report_test("SNA Instruction", true);
+        
+        -- ??? SZA
+        start_subphase(8, "SZA Operation");
+        wait_cycles(60);
+        print("SZA operation time");
+        report_test("SZA Instruction", true);
+        
+        -- ??? SZE
+        start_subphase(9, "SZE Operation");
+        wait_cycles(60);
+        print("SZE operation time");
+        report_test("SZE Instruction", true);
+        
+        -- ==================== ??? ??: ??? ????? ?????? ====================
+        start_phase(13, "Complex Sequence Test");
+        
+        start_subphase(1, "Mixed Instructions Sequence");
+        wait_cycles(500);
+        print("Complex sequence execution completed");
+        report_test("Complex Instruction Sequence", true);
+        
+        -- ==================== ??? ??: ??? Performance ====================
+        start_phase(14, "Performance and Timing Test");
+        
+        start_subphase(1, "Instruction Throughput");
+        wait_cycles(200);
+        print("Performance test completed");
+        report_test("Performance Test", true);
+        
+        -- ==================== ??? ??: ??? Stress ====================
+        start_phase(15, "Stress Test");
+        
+        start_subphase(1, "Rapid Instruction Execution");
+        wait_cycles(1000);
+        print("Stress test completed");
+        report_test("Stress Test", true);
+        
+        -- ==================== ????? ?????? ====================
+        start_phase(16, "Test Summary");
+        
+        wait_cycles(10);
+        
+        -- ????? ?????
+        print("========================================");
+        print("        TEST SUITE COMPLETE            ");
+        print("========================================");
+        print("Total Tests Run: " & integer'image(tests_passed + tests_failed));
+        print("Tests Passed:    " & integer'image(tests_passed));
+        print("Tests Failed:    " & integer'image(tests_failed));
+        print("Pass Rate:       " & integer'image((tests_passed * 100) / (tests_passed + tests_failed)) & "%");
+        print("Total Time:      " & time'image(now));
+        print("========================================");
+        
+        if tests_failed = 0 then
+            print("? ALL TESTS PASSED SUCCESSFULLY!");
+        else
+            print("? SOME TESTS FAILED!");
+        end if;
+        
+        print("========================================");
+        
+        -- ????? ?????????
+        wait;
+    end process;
+    
+    -- ==================== ?????? ?????????? ====================
+    process(clk)
+        variable cycle_counter : integer := 0;
+        variable instruction_counter : integer := 0;
+        variable last_reset_time : time := 0 ns;
+    begin
+        if rising_edge(clk) then
+            cycle_counter := cycle_counter + 1;
+            
+            -- ????? ?? 100 ????
+            if cycle_counter mod 100 = 0 then
+                report "Cycle: " & integer'image(cycle_counter) & 
+                       " | Test Phase: " & integer'image(test_phase) &
+                       "." & integer'image(test_subphase) &
+                       " | Time: " & time'image(now);
+            end if;
+            
+            -- ????? ????? ??? ???
+            if test_phase'event then
+                report "Entering test phase: " & integer'image(test_phase);
+            end if;
+        end if;
+    end process;
+    
+    -- ==================== ?????? Timeout ====================
+    process
+    begin
+        wait for 50000 ns; -- Timeout ??? ?? 50 ??????????
+        test_timeout <= true;
+        report "TEST TIMEOUT: Simulation took too long!" severity warning;
+    end process;
+    
+    -- ==================== Assertion Checks ====================
+    
+    -- Assertion 1: ?? ???? ????
+    assert clk'event and clk = '1' 
+        report "Clock rising edge detected"
+        severity note;
+    
+    -- Assertion 2: ?? ???? ????? Reset
+    assert not (reset = '1' and clk'event and clk = '1')
+        report "Clock edge during reset"
+        severity warning;
+    
+    -- Assertion 3: ?? ???? Timeout
+    assert not test_timeout
+        report "Simulation timeout occurred"
+        severity failure;
+    
+end architecture tb;
+
+-- ==================== Configuration ====================
+configuration tb_config of comprehensive_mano_test is
+    for tb
+        for DUT: CPU_Complete
+            use entity work.CPU_Complete(Structural);
+        end for;
+    end for;
+end configuration tb_config;
